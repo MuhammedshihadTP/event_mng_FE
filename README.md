@@ -9,8 +9,8 @@ It interacts with the backend API to provide a seamless user experience.
 
 ### 1️⃣ **Clone the Repository**
 ```bash
-git clone https://github.com/your-username/event-planner.git
-cd event-planner/frontend
+git clone https://github.com/MuhammedshihadTP/event_mng_FE.git
+cd  event_mng_FE
 
 npm install
 

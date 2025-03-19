@@ -82,7 +82,7 @@ const SchedulingResultsPage = () => {
             <TableRow>
               <TableCell>Task</TableCell>
               <TableCell>duration</TableCell>
-            
+              <TableCell>Sub task Count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -90,6 +90,7 @@ const SchedulingResultsPage = () => {
               <TableRow key={task.taskId}>
                 <TableCell>{task?.description}</TableCell>
                 <TableCell>{(task.duration * 24).toFixed(2)}</TableCell>
+                <TableCell>{task?.subtaskCount}</TableCell>
               </TableRow>
             ))}
           </TableBody>

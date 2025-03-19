@@ -22,7 +22,7 @@ const TaskList = ({ tasks, onEdit, onDelete, loggedInUserId }) => {
             <TableCell>Duration (hours)</TableCell>
             <TableCell>Type</TableCell>
             <TableCell>Timing</TableCell>
-            <TableCell>Offset (Days)</TableCell>
+            <TableCell>Offset (hours)</TableCell>
             <TableCell>Dependencies</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>

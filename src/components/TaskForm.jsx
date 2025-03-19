@@ -37,7 +37,13 @@ const TaskForm = ({ open, onClose, fetchTasks, initialValues }) => {
     },
     validationSchema: Yup.object({
       description: Yup.string().required('Required'),
-      duration: Yup.number().required('Required').positive('Must be positive'),
+      duration: Yup.number()
+      .required('Duration is required')
+      .when('dependencies', (dependencies, schema) => {
+        return dependencies && dependencies.length > 0
+          ? schema.oneOf([0], 'Duration must be zero if subtasks exist')
+          : schema;
+      }),
       type: Yup.string().required('Required'),
       timing: Yup.string().required('Required').oneOf(['before', 'after'], 'Invalid timing'),
       offset: Yup.number().required('Required').min(0, 'Offset must be positive'),

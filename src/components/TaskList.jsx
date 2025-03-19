@@ -22,7 +22,7 @@ const TaskList = ({ tasks, onEdit, onDelete, loggedInUserId }) => {
             <TableCell>Duration (hours)</TableCell>
             <TableCell>Type</TableCell>
             <TableCell>Timing</TableCell>
-            <TableCell>Offset (hours)</TableCell>
+            <TableCell>Offset (Days)</TableCell>
             <TableCell>Dependencies</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
@@ -40,8 +40,8 @@ const TaskList = ({ tasks, onEdit, onDelete, loggedInUserId }) => {
                 <TableCell>{task.timing}</TableCell>
                 <TableCell>{task.offset}</TableCell>
                 <TableCell>
-                  {task.dependencies.length > 0
-                    ? task.dependencies.join(', ')
+                {task.dependencies.length > 0
+                    ? task.dependencies.map(dep => dep.task?.description).join(', ')
                     : 'No dependencies'}
                 </TableCell>
                 <TableCell>

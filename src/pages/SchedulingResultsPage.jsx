@@ -23,6 +23,7 @@ const SchedulingResultsPage = () => {
   const [planEndDate, setPlanEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalEventDuration,setTotalEventDuration]=useState(null);
   const fetchScheduledTasks = async (eventId) => {
     try {
       const response = await API.get(API_ENDPOINTS.SCHEDULE.COMPUTE(eventId));
@@ -38,9 +39,8 @@ const SchedulingResultsPage = () => {
       try {
         const data = await fetchScheduledTasks(eventId);
         setScheduledTasks(data.scheduledTasks);
-        setTotalDuration(data.totalDuration);
-        setPlanStartDate(data.planStartDate);
-        setPlanEndDate(data.planEndDate);
+        setTotalEventDuration(data.totalEventDuration)
+     
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -72,27 +72,24 @@ const SchedulingResultsPage = () => {
       <Typography variant="h4" gutterBottom>
         Scheduling Results
       </Typography>
+    
       <Typography variant="h6" gutterBottom>
-        Event Plan Dates: {new Date(planStartDate).toLocaleString()} - {new Date(planEndDate).toLocaleString()}
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        Total Duration: {totalDuration} hours
+        Total Duration: {(totalEventDuration*24).toFixed(2)} hours
       </Typography>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Task</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>End Date</TableCell>
+              <TableCell>duration</TableCell>
+            
             </TableRow>
           </TableHead>
           <TableBody>
             {scheduledTasks.map((task) => (
               <TableRow key={task.taskId}>
-                <TableCell>{task.description}</TableCell>
-                <TableCell>{new Date(task.startDate).toLocaleString()}</TableCell>
-                <TableCell>{new Date(task.endDate).toLocaleString()}</TableCell>
+                <TableCell>{task?.description}</TableCell>
+                <TableCell>{(task.duration * 24).toFixed(2)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -45,9 +45,15 @@ const Tasks = () => {
   };
 
   const handleEdit = (task) => {
+    if (!task) {
+      toast.error("Task not found!");
+      return;
+    }
+    console.log("Editing task:", task); 
     setSelectedTask(task); 
-    setOpenForm(true); 
+    setOpenForm(true);
   };
+  
 
   const handleDelete = async (taskId) => {
     try {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React , { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Chip,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -20,14 +21,20 @@ import API_ENDPOINTS from '../api/apiEndpoints';
 import API from '../api/api';
 
 const TaskForm = ({ open, onClose, fetchTasks, initialValues }) => {
-  const formik = useFormik({
-    initialValues: initialValues || {
-      description: '',
-      duration: '',
-      type: 'private',
-      dependencies: [],
-      timing: 'before',
-      offset: 0,
+  console.log(initialValues,"1223");
+
+   const [selectedTasks, setSelectedTasks] = useState([]);
+   const [tasks, setTasks] = useState([]);
+
+   const formik = useFormik({
+    enableReinitialize: true,  
+    initialValues: {
+      description: initialValues?.description || '',
+      duration: initialValues?.duration || '',
+      type: initialValues?.type || 'private',
+      dependencies: initialValues?.dependencies || [],
+      timing: initialValues?.timing || 'before',
+      offset: initialValues?.offset || 0,
     },
     validationSchema: Yup.object({
       description: Yup.string().required('Required'),
@@ -37,31 +44,50 @@ const TaskForm = ({ open, onClose, fetchTasks, initialValues }) => {
       offset: Yup.number().required('Required').min(0, 'Offset must be positive'),
     }),
     onSubmit: async (values) => {
+      console.log(values, "Form Submitted");
       try {
-       
-
         const url = initialValues?._id
-        ? API_ENDPOINTS.TASKS.UPDATE(initialValues?._id)
-        : API_ENDPOINTS.TASKS.CREATE;
-      const method = initialValues?._id ? 'put' : 'post';
-
-        await API[method](
-          url,
-          {
-            ...values,
-            dependencies: values.dependencies || [],
-          },
-        
-        );
+          ? API_ENDPOINTS.TASKS.UPDATE(initialValues._id)
+          : API_ENDPOINTS.TASKS.CREATE;
+        const method = initialValues?._id ? 'put' : 'post';
+  
+        const payload = { ...values };
+        if (values.dependencies?.length > 0) {
+          payload.dependencies = values.dependencies;
+        } else {
+          delete payload.dependencies; 
+        }
+  
+        await API[method](url, payload);
         toast.success(`Task ${initialValues?._id ? 'updated' : 'created'} successfully!`);
         fetchTasks();
         onClose();
       } catch (err) {
         toast.error(err.response?.data?.error || `Failed to ${initialValues?._id ? 'update' : 'create'} task`);
       }
-    },
+    }
   });
+  
 
+    useEffect(() => {
+      const fetchTasks = async () => {
+        try {
+  
+          const response = await API.get(API_ENDPOINTS.TASKS.GET_ALL);
+          setTasks(response.data);
+        } catch (err) {
+          toast.error(err.response?.data?.error || 'Failed to fetch tasks');
+        }
+      };
+      fetchTasks();
+    }, [initialValues]);
+
+  const handleTaskSelection = (event) => {
+    const selectedTaskIds = event.target.value;
+    const selectedTasksData = tasks.filter((task) => selectedTaskIds.includes(task?._id));
+    setSelectedTasks(selectedTasksData);
+    formik.setFieldValue('dependencies', selectedTaskIds);
+  };
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{initialValues?._id ? 'Edit Task' : 'Create Task'}</DialogTitle>
@@ -119,7 +145,7 @@ const TaskForm = ({ open, onClose, fetchTasks, initialValues }) => {
           <TextField
             fullWidth
             margin="normal"
-            label="Offset (days or hours)"
+            label="Offset (days )"
             type="number"
             name="offset"
             value={formik.values?.offset}
@@ -128,6 +154,30 @@ const TaskForm = ({ open, onClose, fetchTasks, initialValues }) => {
             error={formik.touched.offset && Boolean(formik.errors.offset)}
             helperText={formik.touched.offset && formik.errors.offset}
           />
+
+          <FormControl fullWidth margin="normal">
+                      <InputLabel>Tasks</InputLabel>
+                      <Select
+                        multiple
+                        name="tasks"
+                        value={selectedTasks?.map((task) => task?._id)}
+                        onChange={handleTaskSelection}
+                        renderValue={(selected) => (
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected?.map((taskId) => {
+                              const task = tasks?.find((t) => t?._id === taskId);
+                              return <Chip key={taskId} label={task?.description} />;
+                            })}
+                          </Box>
+                        )}
+                      >
+                        {tasks?.map((task) => (
+                          <MenuItem key={task?._id} value={task?._id}>
+                            {task?.description}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
         </Box>
       </DialogContent>
       <DialogActions>

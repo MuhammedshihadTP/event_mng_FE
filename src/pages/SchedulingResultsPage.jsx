@@ -74,7 +74,7 @@ const SchedulingResultsPage = () => {
       </Typography>
     
       <Typography variant="h6" gutterBottom>
-        Total Duration: {(totalEventDuration*24).toFixed(2)} hours
+        Total Event Duration: {totalEventDuration} hours
       </Typography>
       <TableContainer component={Paper}>
         <Table>
@@ -89,7 +89,7 @@ const SchedulingResultsPage = () => {
             {scheduledTasks.map((task) => (
               <TableRow key={task.taskId}>
                 <TableCell>{task?.description}</TableCell>
-                <TableCell>{(task.duration * 24).toFixed(2)}</TableCell>
+                <TableCell>{task?.duration}</TableCell>
                 <TableCell>{task?.subtaskCount}</TableCell>
               </TableRow>
             ))}
